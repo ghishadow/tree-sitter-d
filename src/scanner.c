@@ -274,10 +274,10 @@ match_heredoc_string(TSLexer *lexer)
 {
 	// this is an arbitrary, but reasonable limit
 	// no identifiers longer than this
-	int identifier[256 + 2]; // +2 for closing " and null
+	int    identifier[256 + 2]; // +2 for closing " and null
 	size_t i = 0;
 	size_t j;
-	int c;
+	int    c;
 
 	// get the delimiter
 	while (i < (sizeof(identifier) - 2)) {
@@ -686,14 +686,8 @@ match_number(TSLexer *lexer, const bool *valid)
 
 		case '_':
 			// an embedded (or possibly trailing) underscore.
-			// Allow underscores immediately after the exponent.
-			if ((in_exp) || has_digit) {
-				lexer->advance(lexer, false);
-				continue;
-			}
-			// either after 0[xXbB] or decimal.
-			done = true;
-			break;
+			lexer->advance(lexer, false);
+			continue;
 
 		case 'e':
 		case 'E':
@@ -857,7 +851,7 @@ tree_sitter_d_external_scanner_scan(
 		case '<':
 			return (match_delimited_string(lexer, '<', '>'));
 		default:;
-			if (isalnum(c)) {
+			if (isalnum(c) || c == '_') {
 				return (match_heredoc_string(lexer));
 			}
 			// non-nesting deliimted string
