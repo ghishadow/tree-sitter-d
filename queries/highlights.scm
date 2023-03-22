@@ -2,7 +2,7 @@
 ;
 ; Highlighting queries for D code for use by Tree-Sitter.
 ;
-; Copyright 2022 Garrett D'Amore
+; Copyright 2023 Garrett D'Amore
 ;
 ; Distributed under the MIT License.
 ; (See accompanying file LICENSE.txt or https://opensource.org/licenses/MIT)
@@ -12,7 +12,28 @@
 (identity_expression (in) @operator)
 (identity_expression (is) @operator)
 
-(storage_class) @keyword.storage
+[
+	(lazy)
+	(align)
+	(extern)
+	(static)
+	(abstract)
+	(final)
+	(override)
+	(synchronized)
+	(auto)
+	(scope)
+	(gshared)
+	(ref)
+	(deprecated)
+	(nothrow)
+	(pure)
+	(type_ctor)
+] @keyword.storage
+
+(parameter_attribute (return) @keyword.storage)
+(parameter_attribute (in) @keyword.storage)
+(parameter_attribute (out) @keyword.storage)
 
 (function_declaration (identifier) @function)
 
@@ -132,10 +153,6 @@
     ">>>"
     "!"
     "!="
-    "("
-    ")"
-    "["
-    "]"
     "?"
     "$"
     "="
@@ -160,6 +177,15 @@
     ":"
     ","
 ] @punctuation.delimiter
+
+[
+    "("
+    ")"
+    "["
+    "["
+    "{"
+    "}"
+] @punctuation.bracket
 
 [
     (null)
@@ -190,6 +216,7 @@
     (ulong)
     (real)
     (double)
+    (float)
 ] @type
 
 [

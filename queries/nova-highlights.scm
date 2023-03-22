@@ -31,6 +31,8 @@
 	")"
 	"["
 	"]"
+	"{"
+	"}"
 ] @bracket
 
 [
@@ -39,10 +41,28 @@
 ] @keyword.operator
 
 [
-	(parameter_attribute)
-	(storage_class)
+	(lazy)
+	(align)
+	(extern)
+	(static)
+	(abstract)
+	(final)
+	(override)
+	(synchronized)
+	(auto)
+	(scope)
+	(gshared)
+	(ref)
+	(deprecated)
+	(nothrow)
+	(pure)
 	(type_ctor)
 ] @keyword.modifier
+
+; these are special only when it shows up here
+(parameter_attribute (return) @keyword.modifier)
+(parameter_attribute (in) @keyword.modifier)
+(parameter_attribute (out) @keyword.modifier)
 
 (function_declaration (identifier) @identifier.function)
 (call_expression (type (identifier) @identifier.function))
@@ -127,7 +147,8 @@
 	(ulong)
 	(real)
 	(double)
-] @keyword.construct
+	(float)
+]  @value.entity @identifier.type.core ; remove value.entity when stylesheets know about core identifiers.
 
 [
 	(class)
@@ -164,51 +185,55 @@
 	(assert)
 	(auto)
 	(cast)
-	(const)
 	(debug)
 	(delete)
 	(deprecated)
 	(export)
 	(extern)
 	(final)
-	(immutable)
-	(in)
-	(inout)
 	(invariant)
 	(is)
-	(lazy)
 	; "macro" - obsolete
 	(mixin)
 	(module)
 	(new)
-	(nothrow)
-	(out)
 	(override)
-	(package)
 	(pragma)
-	(private)
-	(protected)
-	(public)
-	(pure)
-	(ref)
 	(scope)
-	(shared)
-	(static)
-	(super)
 	(synchronized)
 	(template)
-	(this)
 	(throw)
 	(typeid)
 	(typeof)
 	(unittest)
 	(version)
 	(with)
-	(gshared)
 	(traits)
 	(vector)
 	(parameters_)
 ] @keyword
+
+[
+	(this)
+	(super)
+] @keyword.self
+
+[
+	(const)
+	(immutable)
+	(in)
+	(inout)
+	(lazy)
+	(ref)
+	(protected)
+	(private)
+	(package)
+	(public)
+	(pure)
+	(gshared)
+	(shared)
+	(static)
+] @keyword.modifier
 
 [
 	(cent)
@@ -225,6 +250,7 @@
 (debug_specification (debug) (int_literal) @invalid) ; deprecated in 2.101
 (version_condition (version) (int_literal) @invalid) ; deprecated in 2.101
 (version_specification (version) (int_literal) @invalid) ; deprecated in 2.101
+(version_condition (identifier) @value.symbol)
 
 (module_fqn) @cdata ; this is a crummy workaround since we don't have anything for imports
 (module_declaration (module_fqn)) @definition.package
@@ -233,8 +259,17 @@
 (interface_declaration (identifier) @identifier.type.protocol)
 (at_attribute) @identifier.property
 ; builtin type aliases
-(type (identifier) @_type (#match? @_type "^(d|w)?string$")) @identifier.type
-(type (identifier) @_type (#match? @_type "^(size_t|ptrdiff_t|noreturn)$")) @identifier.type
+; we are using value.entity because no stylesheets do anything useful with identifier.type.core.
+(type (identifier) @_type (#match? @_type "^(string|dstring|wstring|size_t|ptrdiff_t|noreturn)$")) @value.entity @identifier.type.core
 ; conventional naming
 (type (identifier) @_type (#match? @_type "^[A-Z]")) @identifier.type.class
+(type (identifier) @_type (#not-match? @_type "^[A-Z]")) @identifier.type
+(enum_declaration (enum) . (identifier) @identifier.type.enum)
+(auto_declaration (storage_class (auto)) . (identifier) @identifier.variable)
+(manifest_declarator . (identifier) @identifier.constant)
+((identifier) @_type (#match? @_type "^(string|dstring|wstring|size_t|ptrdiff_t|noreturn)$")) @value.entity @identifier.type.core
 (identifier) @identifier ; catch all
+(declarator . (identifier) @identifier.variable)
+(declarator "=" (void) @value.null)
+
+((enum_member  . (identifier) @identifier.property) (#set! role enum-member))
